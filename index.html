@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel de Absenteísmo — Rede Municipal de Saúde de Cajamar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img class="logo" src="logo.png" alt="Cajamar Prefeitura">
+    <div>
+    <div class="brand">SECRETARIA MUNICIPAL DE SAÚDE DE CAJAMAR — e-SUS APS</div>
+    <h1>Painel de Absenteísmo na Rede de Atenção Primária</h1>
+    <div class="meta">Período: <b id="periodo"></b> · Atualizado em <b id="gerado"></b> · Origem: <b id="origem"></b></div>
+    </div>
+  </header>
+  <div class="stripe"><i></i><i></i><i></i><i></i></div>
+
+  <div class="upload">
+    <div class="txt"><b>Atualizar dados.</b> Selecione os relatórios gerenciais exportados do e-SUS (absenteísmo e atendimentos, <b>do mesmo período e com os mesmos filtros</b>), em .xlsx ou .csv. O processamento ocorre integralmente no navegador; nenhum arquivo é enviado a servidor, e apenas os totais agregados ficam salvos neste dispositivo.</div>
+    <div>
+      <input type="file" id="files" accept=".xlsx,.xls,.csv" multiple hidden>
+      <button class="btn" id="btn-upload">Selecionar relatórios</button>
+      <button class="btn ghost" id="btn-reset">Restaurar dados iniciais</button>
+    </div>
+  </div>
+  <div class="status" id="status" role="status"></div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="volume">Volume de faltas</button>
+    <button class="tab-btn" data-tab="taxa">Taxa percentual</button>
+  </nav>
+
+  <section class="tab-panel active" id="tab-volume">
+    <div class="kpis" id="kpis-volume"></div>
+    <div class="grid">
+      <div>
+        <div class="panel"><h2>Faltas por unidade de saúde</h2><div class="sub">Total e proporção sobre o total geral de faltas</div><div id="c-unidade"></div></div>
+        <div class="panel"><h2>Tempo entre agendamento e consulta</h2><div class="sub">Faltas por intervalo entre o agendamento e a data da consulta</div><div id="c-tempo"></div><div class="note" id="n-tempo"></div></div>
+      </div>
+      <div>
+        <div class="panel"><h2>Categoria profissional</h2><div id="c-categoria"></div></div>
+        <div class="panel"><h2>Horário (turno)</h2><div class="sub">Proporção de faltas por turno</div><div id="c-turno"></div><div class="note" id="n-turno"></div></div>
+        <div class="panel" id="p-hora" hidden><h2>Horário (hora do agendamento)</h2><div class="sub">Proporção de faltas por hora</div><div id="c-hora"></div></div>
+        <div class="panel"><h2>Tipo de falta</h2><div id="c-tipo"></div></div>
+        <div class="panel"><h2>Faixa etária (agrupada)</h2><div id="c-estagio"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab-panel" id="tab-taxa">
+    <div id="taxa-empty" class="panel empty" hidden>A taxa percentual requer o relatório de atendimentos do mesmo período. Envie-o em conjunto com o de absenteísmo.</div>
+    <div id="taxa-body">
+      <div class="formula">Taxa = absenteísmo ÷ (atendimentos + absenteísmo) — <b>base: total de vagas agendadas</b></div>
+      <div class="kpis" id="kpis-taxa"></div>
+      <div class="panel">
+        <h2>Taxa de absenteísmo por unidade de saúde</h2>
+        <div class="sub">Ordenado da maior para a menor taxa</div>
+        <div class="legend"><span><i class="dot" style="background:var(--red)"></i> 35% ou mais</span><span><i class="dot" style="background:var(--amber)"></i> 25% a 35%</span><span><i class="dot" style="background:var(--teal)"></i> abaixo de 25%</span></div>
+        <div id="t-unidade"></div><div class="note" id="n-unidade"></div><div class="note warn" id="w-unidade" hidden></div>
+      </div>
+      <div class="panel"><h2>Taxa de absenteísmo por categoria profissional</h2><div id="t-categoria"></div><div class="note warn" id="w-categoria" hidden></div></div>
+      <div class="panel" id="p-t-turno" hidden><h2>Taxa de absenteísmo por turno</h2><div id="t-turno"></div></div>
+      <div class="panel" id="p-t-hora" hidden><h2>Taxa de absenteísmo por hora</h2><div id="t-hora"></div></div>
+    </div>
+  </section>
+
+  <footer>Fonte: relatórios gerenciais de absenteísmo e de atendimentos, e-SUS APS — Ministério da Saúde. Consolidação e leitura de responsabilidade da Secretaria Municipal de Saúde de Cajamar. A taxa percentual está sujeita a eventuais diferenças de escopo entre os dois relatórios de origem.</footer>
+</div>
+<script src="vendor/xlsx.mini.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
