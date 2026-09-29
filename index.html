@@ -23,31 +23,75 @@
   <div class="stripe"><i></i><i></i><i></i><i></i></div>
 
   <div class="upload">
-    <div class="txt"><b>Atualizar dados.</b> Selecione os relatórios gerenciais exportados do e-SUS (absenteísmo e atendimentos, <b>do mesmo período e com os mesmos filtros</b>), em .xlsx ou .csv. O processamento ocorre integralmente no navegador; nenhum arquivo é enviado a servidor, e apenas os totais agregados ficam salvos neste dispositivo.</div>
+    <div class="txt"><b>Adicionar um novo período.</b> Selecione os relatórios gerenciais exportados do e-SUS (absenteísmo e atendimentos, <b>do mesmo período e com os mesmos filtros</b>), em .xlsx ou .csv. O período entra como um novo item no histórico — não substitui os anteriores. O processamento ocorre no navegador; nada é enviado a servidor. Sem certeza do formato exigido? Baixe o <a href="modelo-de-carga-esus.xlsx" download>modelo de planilha</a> com as colunas certas e um exemplo preenchido.</div>
     <div>
       <input type="file" id="files" accept=".xlsx,.xls,.csv" multiple hidden>
       <button class="btn" id="btn-upload">Selecionar relatórios</button>
+      <button class="btn ghost" id="btn-download-data">Baixar dados atualizados (data.js)</button>
       <button class="btn ghost" id="btn-reset">Restaurar dados iniciais</button>
     </div>
   </div>
   <div class="status" id="status" role="status"></div>
 
+  <div class="period-bar">
+    <label for="period-select">Período exibido nas abas abaixo:</label>
+    <select id="period-select"></select>
+    <span class="period-count" id="period-count"></span>
+  </div>
+
+  <details class="panel filters" open>
+    <summary>
+      <span class="fs-title">Filtros</span>
+      <span class="fs-summary" id="filters-summary">todos os registros</span>
+      <button class="btn ghost sm" id="btn-clear-filters" type="button">Limpar filtros</button>
+    </summary>
+    <div class="fs-sub">Os filtros abaixo recalculam os cartões, gráficos e o cruzamento da aba <b>Volume de faltas</b>. A aba <b>Taxa percentual</b> não é afetada — ela depende do relatório de atendimentos, que não traz o mesmo nível de detalhe (ver nota naquela aba).</div>
+    <div class="filters-grid">
+      <div class="fgroup">
+        <div class="fg-title">Faixa etária <span class="fg-actions"><button data-g="faixa" data-a="all">todas</button>·<button data-g="faixa" data-a="none">nenhuma</button></span></div>
+        <div class="chips" id="f-chips"></div>
+        <details class="fg-detail"><summary>Faixa etária detalhada (por idade)</summary><div class="fg-list" id="f-faixa"></div></details>
+      </div>
+      <div class="fgroup">
+        <div class="fg-title">Categoria profissional <span class="fg-actions"><button data-g="categoria" data-a="all">todas</button>·<button data-g="categoria" data-a="none">nenhuma</button></span></div>
+        <div class="fg-list" id="f-categoria"></div>
+      </div>
+      <div class="fgroup">
+        <div class="fg-title">Turno <span class="fg-actions"><button data-g="turno" data-a="all">todos</button>·<button data-g="turno" data-a="none">nenhum</button></span></div>
+        <div class="fg-list" id="f-turno"></div>
+      </div>
+      <div class="fgroup">
+        <div class="fg-title">Unidade de saúde <span class="fg-actions"><button data-g="unidade" data-a="all">todas</button>·<button data-g="unidade" data-a="none">nenhuma</button></span></div>
+        <div class="fg-list" id="f-unidade"></div>
+      </div>
+    </div>
+  </details>
+
   <nav class="tabs">
     <button class="tab-btn active" data-tab="volume">Volume de faltas</button>
     <button class="tab-btn" data-tab="taxa">Taxa percentual</button>
+    <button class="tab-btn" data-tab="historico">Histórico</button>
   </nav>
 
   <section class="tab-panel active" id="tab-volume">
     <div class="kpis" id="kpis-volume"></div>
+
+    <div class="panel">
+      <h2>Cruzamento: faixa etária × categoria profissional</h2>
+      <div class="sub">Número de faltas por combinação, dentro do recorte selecionado acima. Cor mais forte = mais faltas.</div>
+      <div class="heat-wrap" id="heatmap"></div>
+      <div class="note" id="n-heat"></div>
+      <div class="note" style="margin-top:8px">Este cruzamento mostra <b>quantidade de faltas</b>, não taxa percentual: o relatório de atendimentos do e-SUS não traz a faixa etária, então não é possível calcular "faltas ÷ agendados" por idade — apenas o volume. "Categoria profissional" é a classificação disponível no e-SUS (médico, enfermeiro, cirurgião dentista, psicólogo, nutricionista); o relatório não identifica a especialidade médica (ex.: pediatria, cardiologia). O detalhamento por hora depende do campo "Hora" no relatório exportado; sem ele, a granularidade mínima de horário é o turno.</div>
+    </div>
+
     <div class="grid">
       <div>
-        <div class="panel"><h2>Faltas por unidade de saúde</h2><div class="sub">Total e proporção sobre o total geral de faltas</div><div id="c-unidade"></div></div>
+        <div class="panel"><h2>Faltas por unidade de saúde</h2><div class="sub">Total e proporção sobre o total do recorte selecionado</div><div id="c-unidade"></div></div>
         <div class="panel"><h2>Tempo entre agendamento e consulta</h2><div class="sub">Faltas por intervalo entre o agendamento e a data da consulta</div><div id="c-tempo"></div><div class="note" id="n-tempo"></div></div>
       </div>
       <div>
         <div class="panel"><h2>Categoria profissional</h2><div id="c-categoria"></div></div>
-        <div class="panel"><h2>Horário (turno)</h2><div class="sub">Proporção de faltas por turno</div><div id="c-turno"></div><div class="note" id="n-turno"></div></div>
-        <div class="panel" id="p-hora" hidden><h2>Horário (hora do agendamento)</h2><div class="sub">Proporção de faltas por hora</div><div id="c-hora"></div></div>
+        <div class="panel"><h2>Turno</h2><div class="sub">Proporção de faltas por turno</div><div id="c-turno"></div></div>
         <div class="panel"><h2>Tipo de falta</h2><div id="c-tipo"></div></div>
         <div class="panel"><h2>Faixa etária (agrupada)</h2><div id="c-estagio"></div></div>
       </div>
@@ -55,6 +99,7 @@
   </section>
 
   <section class="tab-panel" id="tab-taxa">
+    <div class="note" style="margin-bottom:14px">Esta aba usa sempre a base completa dos dois relatórios (sem os filtros acima), pois o cálculo de taxa exige o mesmo nível de detalhe nos dois lados — e o relatório de atendimentos só traz unidade e categoria profissional em comum com o de absenteísmo.</div>
     <div id="taxa-empty" class="panel empty" hidden>A taxa percentual requer o relatório de atendimentos do mesmo período. Envie-o em conjunto com o de absenteísmo.</div>
     <div id="taxa-body">
       <div class="formula">Taxa = absenteísmo ÷ (atendimentos + absenteísmo) — <b>base: total de vagas agendadas</b></div>
@@ -71,9 +116,18 @@
     </div>
   </section>
 
+  <section class="tab-panel" id="tab-historico">
+    <div class="note" style="margin-bottom:14px">Cada período enviado nesta tela fica salvo no histórico deste navegador. Para que o histórico apareça igual para <b>qualquer pessoa</b> que abra este site (não só neste navegador), use "Baixar dados atualizados" acima, substitua o arquivo <code>data.js</code> no seu projeto do Cloudflare Pages e publique de novo — sem precisar mexer em código.</div>
+    <div class="note" id="h-delta" style="margin-bottom:14px"></div>
+    <div class="panel"><h2>Faltas por período</h2><div class="sub">Total de faltas registradas em cada período carregado</div><div id="h-faltas"></div></div>
+    <div class="panel" id="h-taxa-wrap"><h2>Taxa global de absenteísmo por período</h2><div class="sub">Apenas períodos com relatório de atendimentos correspondente</div><div id="h-taxa"></div></div>
+    <div class="panel"><h2>Tabela do histórico</h2><div class="heat-wrap" id="h-table"></div></div>
+  </section>
+
   <footer>Fonte: relatórios gerenciais de absenteísmo e de atendimentos, e-SUS APS — Ministério da Saúde. Consolidação e leitura de responsabilidade da Secretaria Municipal de Saúde de Cajamar. A taxa percentual está sujeita a eventuais diferenças de escopo entre os dois relatórios de origem.</footer>
 </div>
 <script src="vendor/xlsx.mini.min.js"></script>
+<script src="data.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

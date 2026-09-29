@@ -51,3 +51,46 @@ h1{font-size:clamp(22px,3vw,30px);font-weight:800;margin:0 0 6px;letter-spacing:
 .empty{font-size:13px;color:var(--ink-soft)}
 footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft)}
 @media(max-width:860px){.logo{height:64px}header.top{gap:14px;padding:12px 14px}.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.bar-row{grid-template-columns:104px 1fr 88px;font-size:12px}.bar-row.wide{grid-template-columns:118px 1fr 92px}.tabs{overflow-x:auto}}
+
+/* ---------- filtros ---------- */
+.filters{padding:0}
+.filters summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 20px}
+.filters summary::-webkit-details-marker{display:none}
+.filters summary::before{content:'▸';color:var(--teal);font-size:12px;transition:transform .15s}
+.filters[open] summary::before{transform:rotate(90deg)}
+.fs-title{font-size:15px;font-weight:700}
+.fs-summary{font-size:12.5px;color:var(--ink-soft);background:var(--teal-soft);padding:3px 10px;border-radius:20px}
+.btn.sm{padding:5px 11px;font-size:12px}
+.filters summary .btn.sm{margin-left:auto}
+.fs-sub{font-size:12px;color:var(--ink-soft);padding:0 20px 12px;line-height:1.5}
+.filters-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:0 20px 20px}
+.fgroup{min-width:0}
+.fg-title{font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.fg-actions button{appearance:none;border:none;background:none;color:var(--teal-dark);font:600 11.5px inherit;font-family:inherit;cursor:pointer;padding:0}
+.fg-list{max-height:190px;overflow-y:auto;border:1px solid var(--line);border-radius:7px;padding:6px 10px;background:var(--bg)}
+.fg-list label{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft);padding:3px 0;cursor:pointer}
+.fg-list input{accent-color:var(--teal);flex:none}
+.fg-detail summary{cursor:pointer;font-size:12px;color:var(--teal-dark);font-weight:600;list-style:none;margin-top:2px}
+.fg-detail summary::-webkit-details-marker{display:none}
+.fg-detail[open] summary{margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:2px}
+.chip{appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);font:600 12px inherit;font-family:inherit;padding:5px 11px;border-radius:20px;cursor:pointer}
+.chip.active{background:var(--teal);border-color:var(--teal);color:#fff}
+@media(max-width:860px){.filters-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.filters-grid{grid-template-columns:1fr}}
+
+/* ---------- heatmap ---------- */
+.heat-wrap{overflow-x:auto}
+table.heat{border-collapse:collapse;width:100%;font-size:12.5px;min-width:560px}
+table.heat th, table.heat td{padding:8px 9px;text-align:center;border:1px solid var(--line)}
+table.heat th{background:var(--bg);color:var(--ink-soft);font-weight:600;white-space:nowrap}
+table.heat th.rowh{text-align:left;color:var(--ink);white-space:nowrap}
+table.heat td{color:#fff;font-weight:700;font-variant-numeric:tabular-nums}
+table.heat td.z{color:var(--ink-soft);background:var(--panel) !important;font-weight:400}
+table.heat td.tot, table.heat th.tot{background:var(--panel);color:var(--ink);font-weight:700;border-top:2px solid var(--line)}
+
+/* ---------- seletor de período ---------- */
+.period-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px}
+.period-bar label{font-weight:600;color:var(--ink)}
+.period-bar select{font:600 13px inherit;font-family:inherit;padding:6px 10px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.period-count{color:var(--ink-soft);font-size:12px;margin-left:auto}
